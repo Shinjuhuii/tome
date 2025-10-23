@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>러닝 슬쩍하기</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+      background: linear-gradient(135deg, #d9f99d 0%, #fef08a 50%, #d9f99d 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .settings-icon {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 393px; /* iPhone 14 Pro 가로 기준 */
+      padding: 16px;
+      text-align: center;
+      margin-top: 70px;
+    }
+
+
+    .status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .flame-icon {
+      width: 12px;
+      height: 16px;
+
+    }
+
+    .status-text {
+      color: #374151;
+      font-size: 16px;
+      font-weight: 400;
+    }
+
+    .title {
+      font-size: 34px;
+      font-weight: 600;
+      color: #454545;
+      margin-bottom: 20px;
+    }
+
+    .speech-bubble {
+      position: relative;
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(8px);
+      border: 1.7px solid #BADF00;
+      border-radius: 20px;
+      padding: 12px 24px;
+      margin-bottom: 40px;
+    }
+
+
+
+    .speech-text {
+      color: #1f2937;
+      font-size: 17px;
+      line-height: 1.4;
+    }
+
+    .timer-container {
+    position: relative;
+    width: 70vw;
+    height: 70vw;
+    max-width: 320px;
+    max-height: 320px;
+    margin: 0 auto 12vw;
+    transform: translateX(-75%); /* ✅ 왼쪽으로 이동 */
+    }
+    .timer-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .timer-marker {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 48px;
+      height: 48px;
+      background: #84cc16;
+      border: 3px solid white;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+      transition: transform 1s linear;
+    }
+
+    .clock-number {
+      position: absolute;
+      color: #4b5563;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .num-2 { top: 24px; left: 50%; transform: translateX(-50%); }
+    .num-4 { top: 50%; left: 24px; transform: translateY(-50%); }
+    .num-6 { top: 50%; right: 24px; transform: translateY(-50%); }
+    .num-8 { bottom: 60px; right: 60px; }
+    .num-0 { bottom: 24px; left: 50%; transform: translateX(-50%); }
+
+    .timer-display {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    .timer-label {
+      color: #374151;
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .timer-time {
+      font-size: 38px;
+      font-weight: 600;
+      color: #454545;
+      letter-spacing: 2px;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      margin-top: -35px; /* ✅ 새롭게 추가: 위로 30px 올림 */
+    }
+    
+
+    .control-btn {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(6px);
+      border: 2px solid #BADF00;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .control-btn:hover {
+      background: white;
+      transform: scale(1.05);
+    }
+
+    .main-btn {
+      width: 114px;
+      height: 114px;
+      background: white;
+      border: 2px solid #BADF00;
+    }
+
+    .pause-icon {
+      display: flex;
+      gap: 6px;
+    }
+
+    .pause-bar {
+      width: 12px;
+      height: 36px;
+      background: #84cc16;
+      border-radius: 3px;
+    }
+
+    .play-icon {
+      width: 0;
+      height: 0;
+      border-top: 18px solid transparent;
+      border-left: 28px solid #84cc16;
+      border-bottom: 18px solid transparent;
+      margin-left: 6px;
+    }
+
+    .bell-icon, .smile-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    @media (max-height: 740px) {
+      .title { font-size: 28px; }
+      .timer-container { width: 240px; height: 240px; margin-bottom: 40px; }
+      .main-btn { width: 88px; height: 88px; }
+      .timer-time { font-size: 40px; }
+    }
+
+    .timer-section {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      width: 100%;
+      max-width: 430px;
+      position: relative;
+      overflow: visible;
+    }
+
+    .timer-container {
+      position: relative;
+      width: 150vw;
+      height: 150vw;
+      max-width: 430px; /* ✅ 320px에서 380px로 증가 */
+      max-height: 430px; /* ✅ 320px에서 380px로 증가 */
+      transform: translateX(-5%);
+      flex-shrink: 0;
+      margin-left: -65vw; /* ✅ -45vw에서 -55vw로 변경 (더 왼쪽으로 밀어 더 많은 부분이 보이게) */
+    }
+
+/* --- CSS 수정 (539번째 줄 근처) --- */
+    .timer-info {
+      /* 기존 속성을 재정의하여 절대 위치로 변경 */
+      position: absolute; /* ✅ 절대 위치 지정 */
+    
+      left: 175px; /* ✅ 왼쪽에서 100px 위치로 지정 */
+      transform: translateY(-50%); /* ✅ 수직 중앙 정렬을 위한 조정 */
+      
+      /* 기존 display: flex, flex-direction, align-items는 제거하거나 유지 가능 */
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      /* margin-left는 더 이상 필요하지 않음 */
+    }
+
+
+
+
+
+    /* 팝업 스타일 */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.popup-overlay.show {
+  display: block;
+  opacity: 1;
+}
+
+.popup-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: white;
+  border-radius: 24px 24px 0 0;
+  padding: 32px 24px;
+  transform: translateY(100%);
+  transition: transform 0.4s ease;
+  z-index: 1000;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.popup-container.show {
+  transform: translateY(0);
+}
+
+.popup-handle {
+  width: 40px;
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  margin: 0 auto 24px;
+}
+
+.popup-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.popup-subtitle {
+  font-size: 14px;
+  color: #999;
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.star-rating {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.star {
+  font-size: 38px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.star:hover {
+  transform: scale(1.1);
+}
+
+.star.filled {
+  color: #ff8c00;
+}
+
+.star.empty {
+  color: #e0e0e0;
+}
+
+.feedback-box {
+  background: #fef5f0;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  min-height: 120px;
+}
+
+.feedback-question {
+  color: #D6C8BA;
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.complete-button {
+  width: 100%;
+  padding: 18px;
+  background: #ff8c00;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.complete-button:hover {
+  background: #e67e00;
+}
+
+.complete-button:active {
+  background: #cc7000;
+}
+
+  </style>
+</head>
+<body>
+
+
+  <div class="container">
+    <div class="header">
+      <div class="status">
+        <img src="fire.png" alt="flame" class="flame-icon">
+        <span class="status-text">운동시간 측정중</span>
+      </div>
+      <h1 class="title">러닝 슬쩍하기</h1>
+      <div class="speech-bubble">
+        <p class="speech-text">
+        </p>
+      </div>
+    </div>
+
+    <div class="timer-section">
+      <div class="timer-container">
+        <svg class="timer-svg" viewBox="0 0 200 200">
+          <circle cx="100" cy="100" r="85" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="32" />
+          <circle cx="100" cy="100" r="18" fill="none" stroke="rgba(186,233,0,0.3)" stroke-width="32" />
+          <circle id="progressCircle" cx="100" cy="100" r="85" fill="none" stroke="url(#gradient)" stroke-width="25" stroke-linecap="round" stroke-dasharray="0 534" />
+          <defs>
+            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#84cc16" />
+              <stop offset="100%" stop-color="#bef264" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <div id="timerMarker" class="timer-marker"></div>
+      </div>
+    
+      <div class="timer-info">
+        <p class="timer-label">운동일정</p>
+        <p class="timer-time" id="timerDisplay">00:00:00</p>
+      </div>
+    </div>
+    
+
+    <div class="controls">
+      <button class="control-btn">
+        <svg class="bell-icon" viewBox="0 0 24 24" fill="#374151" stroke="#374151" stroke-width="2">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+      </button>
+
+      <button class="control-btn main-btn" id="playPauseBtn">
+        <div class="pause-icon" id="pauseIcon">
+          <div class="pause-bar"></div>
+          <div class="pause-bar"></div>
+        </div>
+        <div class="play-icon" id="playIcon" style="display: none;"onclick="window.location.href='focus.html'"></div>
+      </button>
+
+      <button class="control-btn">
+        <svg class="smile-icon" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+          <line x1="9" y1="9" x2="9.01" y2="9"></line>
+          <line x1="15" y1="9" x2="15.01" y2="9"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+<!-- 치파방문 측정 팝업 -->
+<div class="popup-overlay" id="popupOverlay"></div>
+<div class="popup-container" id="popupContainer">
+  <div class="popup-handle"></div>
+  <h2 class="popup-title">운동시간 측정 ✏️</h2>
+  <p class="popup-subtitle">방금 측정한 일정의 코멘트 만족도는 어땠나요?</p>
+  
+  <div class="star-rating" id="starRating">
+    <span class="star filled" data-rating="1">⭐</span>
+    <span class="star filled" data-rating="2">⭐</span>
+    <span class="star filled" data-rating="3">⭐</span>
+    <span class="star empty" data-rating="4">⭐</span>
+    <span class="star empty" data-rating="5">⭐</span>
+  </div>
+
+  <div class="feedback-box">
+    <p class="feedback-question">
+      같은 일정을 또 하게된다면<br>
+      다음에 나에게 해주고 싶은 말은?
+    </p>
+  </div>
+
+  <button class="complete-button" id="completeBtn">측정 완료</button>
+</div>
+
+
+  <script>
+    const gptKey = localStorage.getItem("GPT_API_KEY");
+    const ttsKey = localStorage.getItem("ELEVEN_API_KEY");
+    
+    if (!gptKey || !ttsKey) {
+      alert("API 키가 설정되지 않았습니다. index.html에서 먼저 입력해주세요!");
+      window.location.href = "index.html";
+    }
+    </script>
+    
+  <script>
+    let seconds = 0;
+    let isRunning = true;
+    const timerDisplay = document.getElementById('timerDisplay');
+    const timerMarker = document.getElementById('timerMarker');
+    const progressCircle = document.getElementById('progressCircle');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const pauseIcon = document.getElementById('pauseIcon');
+    const popupOverlay = document.getElementById('popupOverlay');
+    const popupContainer = document.getElementById('popupContainer');
+    const completeBtn = document.getElementById('completeBtn');
+    const stars = document.querySelectorAll('.star');
+
+    function formatTime(totalSeconds) {
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const secs = totalSeconds % 60;
+      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function updateTimer() {
+      if (isRunning) {
+        seconds++;
+        timerDisplay.textContent = formatTime(seconds);
+
+        const angle = (seconds % 60) * 6;
+        timerMarker.style.transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-182px) rotate(${-angle}deg)`;
+
+        const circumference = 2 * Math.PI * 85;
+        const progress = (seconds % 60) * circumference / 60;
+        progressCircle.setAttribute('stroke-dasharray', `${progress} ${circumference}`);
+      }
+    }
+
+    // ✅ 여기에 추가
+    function showPopup() {
+      popupOverlay.classList.add('show');
+      setTimeout(() => {
+        popupContainer.classList.add('show');
+      }, 10);
+    }
+
+    function hidePopup() {
+      popupContainer.classList.remove('show');
+      setTimeout(() => {
+        popupOverlay.classList.remove('show');
+      }, 400);
+    }
+
+    // ✅ 이 함수 수정
+    function toggleTimer() {
+      isRunning = !isRunning;
+      if (isRunning) {
+        pauseIcon.style.display = 'flex';
+        playIcon.style.display = 'none';
+        hidePopup(); // ✅ 추가
+      } else {
+        pauseIcon.style.display = 'none';
+        playIcon.style.display = 'block';
+        showPopup(); // ✅ 추가
+      }
+    }
+
+    // ✅ 여기에 추가
+    stars.forEach(star => {
+      star.addEventListener('click', function() {
+        const rating = parseInt(this.getAttribute('data-rating'));
+        stars.forEach((s, index) => {
+          if (index < rating) {
+            s.classList.remove('empty');
+            s.classList.add('filled');
+          } else {
+            s.classList.remove('filled');
+            s.classList.add('empty');
+          }
+        });
+      });
+    });
+
+    completeBtn.addEventListener('click', () => {
+      window.location.href = 'focus.html';
+    });
+
+    popupOverlay.addEventListener('click', () => {
+      hidePopup();
+      isRunning = true;
+      pauseIcon.style.display = 'flex';
+      playIcon.style.display = 'none';
+    });
+
+    playPauseBtn.addEventListener('click', toggleTimer);
+    setInterval(updateTimer, 1000);
+  </script>
+<script>
+    (async () => {
+      const gptKey = localStorage.getItem("GPT_API_KEY");
+      const ttsKey = localStorage.getItem("ELEVEN_API_KEY");
+      const stylePrompt = localStorage.getItem("STYLE_PROMPT");
+    
+      if (!gptKey || !ttsKey || !stylePrompt) {
+        alert("API 키나 말투 데이터가 없습니다. index.html에서 먼저 설정해주세요!");
+        window.location.href = "index.html";
+        return;
+      }
+    
+      const speechText = document.querySelector(".speech-text");
+      let audioUnlocked = false; // 🔓 사용자 상호작용 여부
+      let loopInterval; // 🕒 반복 타이머 핸들
+    
+      // ✅ 1. GPT 문장 생성 함수
+      async function getTimerSpeech() {
+        try {
+          const res = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${gptKey}`
+            },
+            body: JSON.stringify({
+              model: "gpt-4o-mini",
+              messages: [
+                {
+                  role: "system",
+                  content: `
+    너는 사용자 '주희'의 말투를 그대로 반영하는 타이머 피드백 어시스턴트야.
+    --- 말투 예시 ---
+    ${stylePrompt}
+    --- 끝 ---
+    지금은 운동-러닝 타이머가 작동 중이야.
+    주희처럼 자연스럽고 친근하지만 은근히 화이팅 넘치는 말투로!, 응원을 복돋는 말투 입력
+    짧은 한두 문장을 만들어줘. 존댓말 금지.
+    상은이 언급 금지
+    `
+                },
+                { role: "user", content: "지금 타이머 중에 주희가 해줄 한 문장 만들어줘." }
+              ],
+              temperature: 0.9,
+              max_tokens: 60
+            })
+          });
+    
+          const data = await res.json();
+          return data.choices?.[0]?.message?.content?.trim() || "지금 멈추면 진짜 후회할걸?";
+        } catch (err) {
+          console.error("GPT 오류:", err);
+          return "지금 멈추면 진짜 후회할걸?";
+        }
+      }
+    
+      // ✅ 2. ElevenLabs 음성 재생 함수
+      async function speakWithElevenLabs(text) {
+        try {
+          const voiceId = "JX2t3GZTRuem1pYhwCbN"; // 주희 보이스 ID
+          const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+            method: "POST",
+            headers: {
+              "Accept": "audio/mpeg",
+              "Content-Type": "application/json",
+              "xi-api-key": ttsKey
+            },
+            body: JSON.stringify({
+              text,
+              model_id: "eleven_multilingual_v2",
+              voice_settings: { stability: 0.4, similarity_boost: 0.9 }
+            })
+          });
+    
+          const blob = await res.blob();
+          const audioUrl = URL.createObjectURL(blob);
+          const audio = new Audio(audioUrl);
+          audio.volume = 0.9;
+          await audio.play().catch(err => console.warn("자동재생 제한:", err));
+        } catch (err) {
+          console.error("TTS 오류:", err);
+        }
+      }
+    
+      // ✅ 3. 버튼 생성 (1회 허용용)
+      function createUnlockButton() {
+        const btn = document.createElement("button");
+        btn.textContent = "음성 on";
+        btn.style.position = "fixed";
+        btn.style.bottom = "120px";
+        btn.style.left = "50%";
+        btn.style.transform = "translateX(-50%)";
+        btn.style.padding = "14px 24px";
+        btn.style.fontSize = "16px";
+        btn.style.background = "rgba(255,255,255,0.75)";
+        btn.style.color = "#000";
+        btn.style.border = "1px solid #000";
+        btn.style.borderRadius = "12px";
+        btn.style.cursor = "pointer";
+        btn.style.zIndex = "9999";
+        btn.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+        btn.style.backdropFilter = "blur(6px)";
+        document.body.appendChild(btn);
+    
+        btn.addEventListener("click", async () => {
+          audioUnlocked = true;
+          btn.remove();
+          startFeedbackLoop(); // 🔁 음성 루프 시작
+        });
+      }
+    
+      // ✅ 4. 10초마다 문장 생성 + 음성 재생
+      async function startFeedbackLoop() {
+        async function generateAndSpeak() {
+          const newText = await getTimerSpeech();
+          if (speechText) speechText.textContent = `"${newText}"`;
+          await speakWithElevenLabs(newText);
+        }
+    
+        // 즉시 1회 실행 후 10초마다 반복
+        await generateAndSpeak();
+        loopInterval = setInterval(generateAndSpeak, 6000);
+      }
+    
+      // ✅ 실행 시작 (버튼 먼저 표시)
+      createUnlockButton();
+    
+    })();
+    </script>
+    <script>
+
+function showPopup() {
+  popupOverlay.classList.add('show');
+  setTimeout(() => {
+    popupContainer.classList.add('show');
+  }, 10);
+}
+
+function hidePopup() {
+  popupContainer.classList.remove('show');
+  setTimeout(() => {
+    popupOverlay.classList.remove('show');
+  }, 400);
+}
+
+// toggleTimer 함수 수정
+function toggleTimer() {
+  isRunning = !isRunning;
+  if (isRunning) {
+    pauseIcon.style.display = 'flex';
+    playIcon.style.display = 'none';
+    hidePopup();
+  } else {
+    pauseIcon.style.display = 'none';
+    playIcon.style.display = 'block';
+    showPopup();
+  }
+}
+
+// 별점 기능
+stars.forEach(star => {
+  star.addEventListener('click', function() {
+    const rating = parseInt(this.getAttribute('data-rating'));
+    stars.forEach((s, index) => {
+      if (index < rating) {
+        s.classList.remove('empty');
+        s.classList.add('filled');
+      } else {
+        s.classList.remove('filled');
+        s.classList.add('empty');
+      }
+    });
+  });
+});
+
+// 측정 완료 버튼
+completeBtn.addEventListener('click', () => {
+  window.location.href = 'focus.html';
+});
+
+// 오버레이 클릭시 팝업 닫기
+popupOverlay.addEventListener('click', () => {
+  hidePopup();
+  isRunning = true;
+  pauseIcon.style.display = 'flex';
+  playIcon.style.display = 'none';
+});
+    </script>
+</body>
+</html>

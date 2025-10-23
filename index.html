@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API & 주희 말투 학습</title>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+  <style>
+    body {
+      font-family: 'Apple SD Gothic Neo', sans-serif;
+      background: linear-gradient(180deg, #fff4e0 0%, #ffe9cc 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      padding: 2rem;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+    }
+    input, textarea {
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px;
+      font-size: 15px;
+      border-radius: 10px;
+      border: 1.5px solid #ffb76b;
+    }
+    input[type="file"] {
+      border: none;
+      background: #fff7f0;
+      padding: 10px;
+      font-size: 14px;
+    }
+    button {
+      margin-top: 18px;
+      width: 100%;
+      background: #ff9100;
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button:hover { background: #ffb347; }
+    #response {
+      margin-top: 15px;
+      white-space: pre-wrap;
+      background: #fffaf3;
+      border: 1px solid #ffe3b5;
+      padding: 1em;
+      border-radius: 10px;
+      font-size: 15px;
+      text-align: left;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>✨ API & 주희 말투 학습 ✨</h2>
+    <p>처음 한 번만 입력하면 됩니다.</p>
+
+    <input type="password" id="gptKey" placeholder="🔑 GPT API Key 입력" />
+    <input type="password" id="ttsKey" placeholder="🎙 ElevenLabs API Key 입력" />
+    <input type="file" id="csvFile" accept=".csv" />
+    <textarea id="sampleInput" placeholder="주희한테 테스트할 문장 입력하기 (예: 오늘 뭐하지?)"></textarea>
+    
+    <button id="trainBtn">말투 학습하기</button>
+    <button id="testBtn">말투 테스트</button>
+    <button id="saveBtn">모두 저장하고 main.html로 이동</button>
+    
+    <div id="response">여기에 학습 결과가 표시됩니다.</div>
+  </div>
+
+  <script>
+    let stylePrompt = "";
+
+    // ✅ CSV 업로드 및 말투 학습
+    document.getElementById("trainBtn").addEventListener("click", () => {
+      const fileInput = document.getElementById("csvFile");
+      const file = fileInput.files[0];
+
+      if (!file) {
+        alert("CSV 파일을 먼저 선택해주세요!");
+        return;
+      }
+
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function (results) {
+          const data = results.data;
+          const myMessages = data
+            .filter(row => row['User'] && row['User'].includes('주희'))
+            .map(row => row['Message'])
+            .filter(msg => msg && msg.trim().length >= 2);
+
+          const random = myMessages.sort(() => 0.5 - Math.random()).slice(0, 300);
+          stylePrompt = "다음은 사용자 '주희'의 말투 예시야. 이 말투를 따라 답변해줘:\n\n" + random.join('\n');
+
+          localStorage.setItem("STYLE_PROMPT", stylePrompt);
+          document.getElementById("response").innerText = "✅ 주희 말투 학습 완료! 예시 " + random.length + "개 문장 반영됨.";
+        }
+      });
+    });
+
+    // ✅ GPT 말투 테스트
+    document.getElementById("testBtn").addEventListener("click", async () => {
+      const gptKey = document.getElementById("gptKey").value.trim();
+      const userInput = document.getElementById("sampleInput").value.trim();
+
+      if (!stylePrompt) {
+        alert("먼저 '말투 학습하기'를 진행해주세요!");
+        return;
+      }
+      if (!gptKey) {
+        alert("GPT API 키를 입력해주세요!");
+        return;
+      }
+
+      document.getElementById("response").innerText = "⏳ 주희 말투로 생각 중...";
+
+      try {
+        const res = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${gptKey}`
+          },
+          body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: [
+              { role: "system", content: stylePrompt },
+              { role: "user", content: userInput || "오늘 뭐하지?" }
+            ]
+          })
+        });
+
+        const data = await res.json();
+        const output = data.choices?.[0]?.message?.content?.trim() || "응답 없음 😢";
+        document.getElementById("response").innerText = "💬 주희 말투 응답:\n\n" + output;
+      } catch (err) {
+        document.getElementById("response").innerText = "에러 발생 😢\n" + err;
+      }
+    });
+
+    // ✅ API 키와 말투 저장
+    document.getElementById("saveBtn").addEventListener("click", () => {
+      const gptKey = document.getElementById("gptKey").value.trim();
+      const ttsKey = document.getElementById("ttsKey").value.trim();
+
+      if (!gptKey || !ttsKey || !stylePrompt) {
+        alert("모든 항목(GPT 키, TTS 키, 말투 학습)을 완료해주세요!");
+        return;
+      }
+
+      localStorage.setItem("GPT_API_KEY", gptKey);
+      localStorage.setItem("ELEVEN_API_KEY", ttsKey);
+      localStorage.setItem("STYLE_PROMPT", stylePrompt);
+
+      document.getElementById("response").innerText = "✅ 저장 완료! main.html로 이동합니다.";
+      setTimeout(() => window.location.href = "main.html", 1500);
+    });
+  </script>
+</body>
+</html>

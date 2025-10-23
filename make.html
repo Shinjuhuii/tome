@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+    <title>일정 추가</title>
+    <style>
+      :root { --bg:#f8f8f8; --card:#fff; --text-strong:#222; --text:#6b6b6b; --primary:#ff8a00; --muted:#b9b9b9; --divider:#f0e6dc; --shadow:0 6px 18px rgba(0,0,0,0.06); --radius:14px; }
+      * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+      html, body { height:100%; }
+      body { margin:0; font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; background: linear-gradient(to top, #FFF8F4 0%, #FFFFFF 100%); }
+
+      .device { margin:0 auto; min-height:100vh; position:relative; padding-bottom:100px; }
+
+      .header { display:flex; align-items:center; justify-content:space-between; padding:24px 36px 8px 10px; }
+      .close { width:32px; height:32px; border-radius:8px; display:grid; place-items:center; font-size:18px; }
+      .title { font-weight:600; font-size:18px; }
+
+      .section { margin:10px 1.25rem; padding: 16px; background:var(--card); border-radius:var(--radius); border: 1px solid #E6E6E6; overflow:hidden; }
+      .section .head { padding-bottom: 6px; font-weight:600; font-size:1.2rem; color:#3a3a3a}
+
+
+      .time-card { background:#FFFAF4; border-radius:var(--radius); border: solid 1px #FFE9DD; padding:16px; margin:1.25rem; }
+      .time-row { display:flex; align-items:center; justify-content:space-between;   /* ✅ 아래쪽 여백만 */}
+      .time-row:first-child {  padding-bottom: 18px;   /* ✅ 아래쪽 여백만 */}
+      .time-row:last-child {  padding-top: 18px;}
+      .time-row > div {
+        display: flex;
+        align-items: center;     /* 세로 가운데 정렬 */
+        gap: 8px;                /* 라벨과 값 사이 간격 */
+      }
+
+      /* 라벨과 값의 스타일 균형 */
+      .time-label {
+        font-size: 15px;
+        color: #323232;
+        min-width: 70px;         /* 라벨 정렬 안정화 */
+      }
+
+      .time-value {
+        font-size: 16px;
+        font-weight: 600;
+        color: #919191;
+      }
+      .time-row + .time-row { border-top:1px solid #FFE9DD; }
+      .time-label { font-weight:500; font-size:18px;}
+      .time-value { font-weight:400; font-size:18px; }
+      .edit-btn { background:#fff3e0; color:var(--primary); border:none; border-radius:8px; padding:6px 12px; font-weight:600; font-size:12px; }
+
+      .input-wrap { position:relative; }
+      .input { width:100%; border:none; background:#f8f8f8; border-radius:8px; padding:12px 40px 12px 12px; font-size:16px; }
+      .clear { position:absolute; right:12px; top:50%; transform:translateY(-50%); width:20px; height:20px; border-radius:50%; background:#ddd; display:grid; place-items:center; font-size:12px; color:#666; }
+
+      .toggle-row { display:flex; align-items:center; justify-content:space-between; }
+      .toggle-row .label { font-weight:600;font-size:1.25rem; color: #3a3a3a;}
+      .toggle-row .arrow { color:var(--muted); font-size:18px; transition:transform 0.2s; }
+      .toggle-row .arrow.open { transform:rotate(180deg); }
+
+      .options { display:none; margin-top:8px; }
+      .options.open { display:block; }
+      .option { display:flex; align-items:center; gap:18px; padding:16px 16px; }
+      .option + .option { border-top:1px solid var(--divider); }
+      .option .icon { width:20px; height:20px; border-radius:4px; }
+      .option .text { flex:1; }
+      .option .desc { font-size:12px; color:var(--text); margin-top:2px; }
+
+/* ✅ 버튼 그룹 반응형 가로 정렬 */
+.btn-group {
+  display: flex;
+  justify-content: space-between; /* 양쪽 끝으로 배치 */
+  align-items: center;
+  gap: 8px;                       /* 버튼 사이 간격 */
+  width: 100%;                    /* 부모 영역 가득 */
+}
+
+/* 각 버튼이 동일 비율로 가로로 늘어나도록 */
+.btn-group button {
+  flex: 1;                        /* 가로 공간 동일 분배 */
+  padding: 14px 0;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* 색상 스타일은 원하는 대로 유지 */
+.btn-group .btn-cancel {
+  background: #f3f3f3;
+  color: #555;
+}
+.btn-group .btn-save {
+  background: #ff9100;
+  color: #fff;
+}
+
+/* hover 시 반응 */
+.btn-group button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+      .btn { padding:8px 16px; border-radius:20px; border:none; font-weight:600; font-size:14px; }
+      .btn.outline { background:#fff; color:var(--text); border:1px solid #ddd; }
+      .btn.primary { background:var(--primary); color:#fff; }
+
+      .importance { display:flex; align-items:center; justify-content:space-between; padding:12px 0; }
+      .importance .label { font-weight:500; color:#3e3e3e}
+      .importance .value { display:flex; align-items:center; gap:12px; }
+      .importance .num { font-weight:500; font-size:18px; }
+      .importance .controls { display:flex; gap:8px; }
+      .importance .btn-circle { width:32px; height:32px; border-radius:50%; background:var(--primary); color:#fff; border:none; display:grid; place-items:center; font-weight:800; }
+
+      .bottom-btn { position:fixed; left:16px; right:16px; bottom:20px; background:var(--primary); color:#fff; border:none; border-radius:12px; padding:16px; font-weight:800; font-size:16px; box-shadow:0 8px 24px rgba(255,138,0,0.3); }
+    
+
+      /* 버튼 컨테이너 */
+.voice-toggle {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+/* 공통 버튼 스타일 (기본 상태는 무색 회색 글자) */
+.voice-btn {
+  flex: 1;
+  padding: 12px 0;
+  font-size: 15px;
+  font-weight: 600;
+  border: 1.3px solid #E6E6E6;
+  border-radius: 12px;
+  background: transparent;
+  color: #777;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+/* 활성화 상태 — 색상 강조 */
+.voice-btn.active {
+  border: 1.5px solid #FF9100;     /* 주희 주황색 테두리 */
+  color: #FF9100;                  /* 글자색 강조 */
+  background: rgba(255, 145, 0, 0.08); /* 은은한 오렌지 배경 */
+  box-shadow: 0 0 8px rgba(255, 145, 0, 0.2); /* 살짝 발광 */
+}
+
+/* 클릭 시 부드러운 눌림 효과 */
+.voice-btn:active {
+  transform: scale(0.98);
+}
+
+
+
+/* 반복 버튼 그룹 */
+.repeat-group {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+/* 기본 상태 — 무색 회색 톤 */
+.repeat-btn {
+  flex: 1;
+  padding: 12px 0;
+  font-size: 15px;
+  font-weight: 600;
+  border: 1.3px solid #E6E6E6;
+  border-radius: 12px;
+  background: transparent;
+  color: #777;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+/* 활성화 상태 — 오렌지 색상 강조 (그림자 없음) */
+.repeat-btn.active {
+  border: 1.5px solid #FF9100;
+  color: #FF9100;
+  background: rgba(255, 145, 0, 0.08);
+}
+
+/* 클릭 시 살짝 눌림 효과 */
+.repeat-btn:active {
+  transform: scale(0.98);
+}
+
+/* 여긴 일정 카테고리 */
+    /* 🧡 카테고리 옵션 공통 스타일 */
+    #category-options .option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border: 1.3px solid #E6E6E6;       /* 기본 회색 라인 */
+      border-radius: 14px;
+      background: transparent;
+      color: #555;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      margin-bottom: 10px;
+    }
+
+    /* 아이콘 유지 */
+    #category-options .option .icon {
+      width: 35px;
+      height: 28px;
+      border-radius: 8px;
+    }
+
+    /* 텍스트 영역 */
+    #category-options .option .text {
+      display: flex;
+      flex-direction: column;
+    }
+    #category-options .option .text .desc {
+      font-size: 13px;
+      color: #888;
+    }
+
+    /* ✅ 활성화 상태 (색상 강조만, 그림자 없음) */
+    #category-options .option.active {
+      border-color: #FF9100;
+      background: rgba(255, 145, 0, 0.08);
+      color: #FF9100;
+    }
+
+    /* ✅ 클릭 시 부드럽게 눌림 */
+    #category-options .option:active {
+      transform: scale(0.97);
+      transition: transform 0.05s ease;
+    }
+
+    .option .icon img {
+      width:65%;
+      padding-top: 2px;
+
+      object-fit: cover;          /* 이미지 꽉 차게 */
+       /* 테두리 둥글게 동일 적용 */
+    }
+
+    </style>
+  </head>
+  <body>
+    <div class="device">
+      <div class="header">
+        <div class="close">✕</div>
+        <div class="title">일정 추가</div>
+        <div></div>
+      </div>
+
+      <div class="time-card">
+        <div class="time-row">
+          <div>
+            <div class="time-label">시작시간</div>
+            <div class="time-value">2:00 PM</div>
+          </div>
+          <button class="edit-btn">수정</button>
+        </div>
+        <div class="time-row">
+          <div>
+            <div class="time-label">종료시간</div>
+            <div class="time-value">8:00 PM</div>
+          </div>
+          <button class="edit-btn">수정</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="head">일정 이름</div>
+        <div class="content">
+          <div class="input-wrap">
+            <input type="text" class="input" value="완전 중요한 날" placeholder="일정 이름을 입력하세요">
+            <div class="clear">✕</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="head">알림 방식</div>
+        <div class="content">
+          <div class="voice-toggle">
+            <button class="voice-btn" id="muteBtn">무음</button>
+            <button class="voice-btn" id="myVoiceBtn">내 목소리</button>
+          </div>
+          
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="toggle-row" onclick="toggleDropdown('repeat')">
+          <div class="label">반복</div>
+        </div>
+        <div class="repeat-group">
+          <button class="repeat-btn active" data-value="daily">매일</button>
+          <button class="repeat-btn" data-value="weekly">매주</button>
+          <button class="repeat-btn" data-value="monthly">매달</button>
+        </div>
+        
+        
+      </div>
+
+      <div class="section">
+        <div class="toggle-row" onclick="toggleDropdown('category')">
+          <div class="label">카테고리</div>
+          <div class="arrow" id="category-arrow">▼</div>
+        </div>
+        <div class="options open" id="category-options">
+          <div class="option">
+            <div class="icon">  <img src="r.png"></div>
+            <div class="text">
+              <div>중요한/일반 일정</div>
+              <div class="desc">놓치면 안 되는 일정</div>
+            </div>
+          </div>
+          <div class="option">
+            <div class="icon">  <img src="h.png"></div>
+            <div class="text">
+              <div>좋아하는 일정</div>
+              <div class="desc">즐겁고 기대되는 활동</div>
+            </div>
+          </div>
+          <div class="option">
+            <div class="icon">  <img src="t.png"></div>
+            <div class="text">
+              <div>집중 일정</div>
+              <div class="desc">몰입이 필요한 작업</div>
+            </div>
+          </div>
+          <div class="option">
+            <div class="icon">  <img src="f.png"></div>
+            <div class="text">
+              <div>하기싫은 일정</div>
+              <div class="desc">자꾸 미루게 되는 일정</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="toggle-row" onclick="toggleDropdown('importance')">
+          <div class="label">중요도</div>
+          <div class="arrow" id="importance-arrow">▲</div>
+        </div>
+        <div class="options" id="importance-options">
+          <div class="importance">
+            <div class="label">추천 중요도</div>
+            <div class="value">
+              <div class="num">5</div>
+              <div class="controls">
+                <button class="btn-circle" onclick="changeImportance(-1)">−</button>
+                <button class="btn-circle" onclick="changeImportance(1)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="bottom-btn">추가</button>
+
+    <script>
+      function toggleDropdown(type) {
+        const options = document.getElementById(type + '-options');
+        const arrow = document.getElementById(type + '-arrow');
+        
+        if (options.classList.contains('open')) {
+          options.classList.remove('open');
+          arrow.textContent = '▼';
+        } else {
+          options.classList.add('open');
+          arrow.textContent = '▲';
+        }
+      }
+
+      function changeImportance(delta) {
+        const numEl = document.querySelector('.importance .num');
+        let current = parseInt(numEl.textContent);
+        let newVal = Math.max(1, Math.min(10, current + delta));
+        numEl.textContent = newVal;
+      }
+
+      // Clear input functionality
+      document.querySelector('.clear').addEventListener('click', function() {
+        document.querySelector('.input').value = '';
+      });
+      document.querySelector('.close').addEventListener('click', () => {
+    window.location.href = 'focus.html';
+  });
+    </script>
+    <script>
+      const voiceBtns = document.querySelectorAll('.voice-btn');
+
+voiceBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    voiceBtns.forEach(b => b.classList.remove('active')); // 전체 해제
+    btn.classList.add('active'); // 클릭한 버튼만 강조
+  });
+});
+    </script>
+    <script>
+const repeatBtns = document.querySelectorAll('.repeat-btn');
+repeatBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    repeatBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+
+    </script>
+    <script>
+      // 🧡 카테고리 옵션 클릭 시 선택 효과
+const categoryOptions = document.querySelectorAll('#category-options .option');
+
+categoryOptions.forEach(opt => {
+  opt.addEventListener('click', () => {
+    categoryOptions.forEach(o => o.classList.remove('active'));
+    opt.classList.add('active');
+  });
+});
+
+    </script>
+    <script>
+      // 🧡 하단 'bottom-btn' 클릭 시 focus.html로 이동
+document.querySelector('.bottom-btn')?.addEventListener('click', () => {
+  window.location.href = 'focus.html';
+});
+
+    </script>
+  </body>
+</html>

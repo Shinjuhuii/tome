@@ -1,0 +1,447 @@
+    /* iOS에서 풀스크린 safe-area 고려 (선택) */
+    :root { padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+    /* 캔버스가 픽셀 블러 없이 선명하게 표시되도록 */
+    canvas { image-rendering: pixelated; }
+    
+body {
+    background: linear-gradient(to top, #FFF8F4 0%, #FFFFFF 100%);
+}
+.tag {
+    background: #fff;
+    box-shadow: 0 0px 6px rgba(255, 145, 0, 0.35); /* 주황빛 그림자 */
+    border-radius: 18px;
+    padding: 8px 14px;
+    font-size: 16px;
+    color: #424242;
+    cursor: pointer;
+    transition: 0.15s ease;
+  }
+  .tag:hover {
+    background: #FF9100;
+    color: white;
+  }
+
+  /* 팝업 등장 애니메이션 */
+  @keyframes popupSlide {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+.time-text {
+    color: #454545 !important; /* 기존 회색 톤 복원 */
+    font-weight: 500;
+    font-size : 15pt;
+  }
+.time-text2 {
+    color: #6F6F6F !important; /* 기존 회색 톤 복원 */
+    font-weight: 500;
+    font-size : 15pt;
+}
+
+.app-container {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    padding-bottom: 60px;
+}
+
+    /* 섹션 제목 */
+.section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2c2c2c;
+    margin-bottom: 16px;
+}
+
+/* 주간 집중시간 섹션 */
+.weekly-focus-section {
+    margin-bottom: 24px;
+}
+
+.focus-cards {
+    display: flex;
+    gap: 12px;
+}
+
+.focus-card {
+    flex: 1;
+    border: 1px solid #FFDCC9;
+    border-radius: 12px;
+    padding: 12px 6px 12px 16px;
+}
+
+.general-schedule {
+    background-color: #ffffff;
+}
+
+.unwanted-schedule {
+    background-color: #ffffff;
+}
+
+.card-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.card-text {
+    flex: 1;
+}
+
+.card-label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 4px; /* 👈 간격 아주 살짝 */
+    line-height: 1.1;   /* 👈 글씨 위아래도 타이트하게 */
+}
+
+.card-value {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2c2c2c;
+    line-height: 1.2;
+}
+
+/* ✅ 강조색 (최대, 최소 등) */
+
+.card-graphic {
+    position: relative;
+    width: 40px;
+    height: 40px;
+}
+
+
+.graphic-shape {
+    position: absolute;
+    border-radius: 4px;
+}
+
+.shape1 {
+    width: 20px;
+    height: 12px;
+    background-color: #f0e68c;
+    top: 8px;
+    right: 8px;
+}
+
+.shape2 {
+    width: 16px;
+    height: 10px;
+    background-color: #daa520;
+    top: 12px;
+    right: 4px;
+}
+
+.shape3 {
+    width: 18px;
+    height: 18px;
+    background-color: #87ceeb;
+    border-radius: 50%;
+    top: 6px;
+    right: 6px;
+}
+
+.shape4 {
+    width: 12px;
+    height: 12px;
+    background-color: #4682b4;
+    border-radius: 50%;
+    top: 10px;
+    right: 2px;
+}
+
+/* 주간 미션 섹션 */
+.weekly-mission-section {
+    margin-bottom: 32px;
+}
+
+.mission-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.arrow-icon {
+    font-size: 16px;
+    color: #666;
+    font-weight: 600;
+}
+
+/* ✅ 여기 수정 */
+.mission-cards {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto; /* 가로 스크롤 가능하게 */
+    scrollbar-width: none; /* 스크롤바 숨김 (Firefox) */
+}
+
+.mission-cards::-webkit-scrollbar {
+    display: none; /* 스크롤바 숨김 (Chrome, Safari) */
+}
+
+/* ✅ 각 카드 고정 폭 */
+.mission-card {
+    flex: 0 0 168px; /* 고정 너비 카드 */
+    background-color: white;
+    border: 1px solid #FFE9DC;
+    border-radius: 10px;
+    padding: 16px;
+}
+
+
+.mission-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.mission-text {
+    flex: 1;
+    margin-bottom: 12px;
+}
+
+.mission-label {
+    font-size: 14px;
+    color: #666;
+}
+
+.mission-description {
+    font-size: 14pt;
+    font-weight: 600;
+    color: #3e3e3e;
+    margin-bottom: 4px;
+}
+
+.renewal-text {
+    font-size: 12px;
+    color: #FF9100;
+    font-weight: 500;
+}
+
+.start-button {
+    background-color: #FFEEDF;
+    color: #FF9100;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    align-self: flex-start;
+}
+
+.start-button:hover {
+    background-color: #ede8d5;
+}
+
+/* 집중 랭킹 섹션 */
+.ranking-section {
+    margin-bottom: 32px;
+}
+
+.ranking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ranking-item {
+    border: 1.5px solid #FFE9DC;
+    background-color: white;
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.ranking-item.current-user {
+    border: 2px dashed #FF9100;
+}
+
+.rank-number {
+    width: 24px;
+    height: 24px;
+    background-color: #FF9100;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    margin-right: 12px;
+}
+
+.user-name {
+    flex: 1;
+    font-size: 16px;
+    font-weight: 500;
+    color: #2c2c2c;
+}
+
+.ranking-item.current-user .user-name {
+    color: #FF9100;
+}
+
+.user-time {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.ranking-item.current-user .user-time {
+    color: #FF9100;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 375px) {
+    .app-container {
+        padding: 16px;
+    }
+    
+    .focus-cards,
+    .mission-cards {
+        flex-direction: column;
+    }
+    
+    .focus-card,
+    .mission-card {
+        width: 100%;
+    }
+}
+
+
+
+
+/* 하단 네비게이션 바 */
+.bottom-navigation {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1.6px solid #ffcf91;
+    border-radius: 20px 20px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 20px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* 네비게이션 아이템 */
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    min-width: 60px;
+}
+
+.nav-item:hover {
+    color: #f97316; /* 활성 컬러 */
+    background: rgba(249, 115, 22, 0.1); /* 홈 아이콘 배경 */
+}
+
+/* 네비게이션 아이콘 */
+.nav-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.nav-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* 네비게이션 라벨 */
+.nav-label {
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+/* 기본 상태 (비활성) */
+.nav-item {
+    color: #9ca3af;
+}
+
+.nav-item .nav-icon svg {
+    stroke: #9ca3af;
+}
+
+/* 활성 상태 */
+.nav-item.active {
+    color: #f97316;
+}
+
+.nav-item.active .nav-icon svg {
+    stroke: #f97316;
+}
+
+.nav-item.active .nav-label {
+    color: #f97316;
+    font-weight: 600;
+}
+
+/* 활성 아이템 배경 효과 */
+.nav-item.active {
+    background: rgba(249, 115, 22, 0.1);
+}
+
+/* 호버 효과 */
+.nav-item:not(.active):hover {
+    color: #d1d5db;
+}
+
+.nav-item:not(.active):hover .nav-icon svg {
+    stroke: #d1d5db;
+}
+
+.nav-item:not(.active):hover .nav-label {
+    color: #d1d5db;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 375px) {
+    .bottom-navigation {
+        padding: 0 16px;
+        height: 70px;
+    }
+    
+    .nav-item {
+        min-width: 50px;
+        padding: 6px 8px;
+    }
+    
+    .nav-icon {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .nav-label {
+        font-size: 11px;
+    }
+}
+
+/* 아이폰 하단 영역 대응 */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    .bottom-navigation {
+        padding-bottom: env(safe-area-inset-bottom);
+        height: calc(80px + env(safe-area-inset-bottom));
+    }
+}
+/* 네비 스타일 여기까지 */

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>to.me - 어떤 일정을 측정하나요?</title>
+
+</head>
+<style>
+  /* 기본 스타일 */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+header {
+    width: 100%;
+    max-width: 450px;
+    padding: 15px 20px;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ff8c00;
+}
+
+main {
+    width: 100%;
+    max-width: 450px;
+    padding: 0 20px;
+    box-sizing: border-box;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.question-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 40px;
+    text-align: center;
+}
+
+.question-subtitle {
+    font-size: 16px;
+    color: #888;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+/* --- 카드 캐러셀 스타일 --- */
+
+/* 카드 너비 및 높이 변수 설정 */
+:root {
+    --card-width: 250px;
+    --card-height: 350px;
+    --card-margin: 15px;
+}
+
+.card-carousel {
+    display: flex;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    width: 100%;
+    padding-bottom: 20px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin: 30px 0;
+    /* 카드가 화면 중앙에 오도록 하기 위한 패딩 */
+    padding-left: calc(50% - (var(--card-width) / 2));
+    padding-right: calc(50% - (var(--card-width) / 2));
+}
+
+.card-carousel::-webkit-scrollbar {
+    display: none;
+}
+
+.card-item {
+    flex: 0 0 var(--card-width);
+    height: var(--card-height);
+    margin: 0 var(--card-margin);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    scroll-snap-align: center;
+    transition: transform 0.3s, opacity 0.3s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    background-color: #fff; /* 이미지 카드의 기본 배경 */
+    border: 1px solid #eee;
+}
+
+/* 이미지 카드에 들어가는 이미지 스타일 */
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 이미지가 카드 영역을 채우도록 설정 */
+    border-radius: 15px;
+}
+
+/* --- 3. 하기 싫은 일정 카드 스타일 (CSS 구현 유지) --- */
+.card-main {
+    background-color: #ffffff; 
+    border: 1px solid #eee;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.card-background-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(169, 237, 245, 0.4), rgba(206, 247, 206, 0.4));
+    clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+    opacity: 0.8;
+}
+
+.card-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-top: 50px;
+}
+
+.card-text-ko {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.card-text-ko-sub {
+    font-size: 16px;
+    color: #555;
+    margin-top: 5px;
+}
+
+.card-text-en {
+    position: relative;
+    z-index: 1;
+    font-size: 20px;
+    font-weight: 600;
+    color: #00bcd4;
+    align-self: flex-start;
+    margin-bottom: 20px;
+}
+/* --- 3. 하기 싫은 일정 카드 스타일 끝 --- */
+
+
+/* 빈 카드 스타일 (스크롤 트릭용) */
+.card-empty {
+    background: none; /* 빈 슬롯은 배경 없음 */
+    box-shadow: none;
+    border: none;
+    pointer-events: none;
+    opacity: 0; /* 완전히 숨김 */
+}
+
+
+/* --- 페이지 인디케이터 스타일 --- */
+.dots-container {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 30px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #ddd;
+    transition: background-color 0.3s, width 0.3s, border-radius 0.3s;
+}
+
+.dot.active {
+    background-color: #ff8c00;
+    width: 24px;
+    border-radius: 4px;
+}
+
+/* --- 푸터 스타일 (반응형 가로 길게) --- */
+footer {
+    width: 100%; 
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: #fff;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.footer-content {
+    max-width: 450px;
+    margin: 0 auto; 
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px 0;
+}
+
+.footer-text-group {
+    margin-bottom: 15px;
+}
+
+.friend-measure-text {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.friend-measure-subtext {
+    font-size: 14px;
+    color: #888;
+}
+
+.invite-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #ff8c00;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.invite-button:hover {
+    background-color: #e07b00;
+}
+</style>
+<body>
+    <header>
+        <div class="logo">to.me</div>
+    </header>
+
+    <main>
+        <h1 class="question-title">어떤 일정을 측정하나요?</h1>
+        <p class="question-subtitle">더 정확하게 측정하려 해요.</p>
+
+        <div class="card-carousel">
+            <div class="card-item card-empty"></div>
+
+            <div class="card-item" onclick="goToTimer('timer.html?card=1')">
+                <img src="card1.png" alt="카드 1: 예시 이미지" class="card-image">
+            </div>
+            
+            <div class="card-item" onclick="goToTimer('timer.html?card=2')">
+                <img src="card2.png" alt="카드 2: 예시 이미지" class="card-image">
+            </div>
+
+            <div class="card-item card-main" onclick="goToTimer('timer.html?card=main')">
+                <div class="card-background-effect"></div>
+                <div class="card-content">
+                    <p class="card-text-ko">하기 싫은 일정</p>
+                    <p class="card-text-ko-sub">자꾸 미루게 되는 일정</p>
+                </div>
+                <p class="card-text-en">Don't want</p>
+            </div>
+            
+            <div class="card-item" onclick="goToTimer('timer.html?card=4')">
+                <img src="card4.png" alt="카드 4: 예시 이미지" class="card-image">
+            </div>
+
+            <div class="card-item" onclick="goToTimer('timer.html?card=5')">
+                <img src="card5.png" alt="카드 5: 예시 이미지" class="card-image">
+            </div>
+
+            <div class="card-item" onclick="goToTimer('timer.html?card=6')">
+                <img src="card6.png" alt="카드 6: 예시 이미지" class="card-image">
+            </div>
+
+            <div class="card-item card-empty"></div>
+        </div>
+
+        <div class="dots-container">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot active"></span> <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-text-group">
+                <p class="friend-measure-text">친구와 측정</p>
+                <p class="friend-measure-subtext">친구를 초대하여 같은 일정을 함께 측정해요.</p>
+            </div>
+            <button class="invite-button">친구 초대</button>
+        </div>
+    </footer>
+
+    <script>
+      // 카드 클릭 시 timer.html로 이동하는 함수
+function goToTimer(url) {
+    // 클릭된 카드 정보를 timer.html로 전달
+    window.location.href = url;
+}
+
+// 스크롤 이벤트 처리 (선택된 카드 시각적 강조 및 인디케이터 업데이트)
+document.addEventListener('DOMContentLoaded', () => {
+    const carousel = document.querySelector('.card-carousel');
+    const cards = document.querySelectorAll('.card-item');
+    const dots = document.querySelectorAll('.dot');
+    
+    // 빈 카드 2개를 제외한 실제 콘텐츠 카드의 개수 (6개)
+    const contentCardCount = 6;
+
+    // 초기 로드 시 3번째 카드 (인덱스 2)에 해당하는 인디케이터 활성화
+    if (dots.length === contentCardCount) {
+        dots[2].classList.add('active'); 
+    }
+
+    // 스크롤이 멈췄을 때 중앙에 있는 카드를 감지하는 로직
+    carousel.addEventListener('scroll', () => {
+        clearTimeout(carousel.scrollTimeout);
+        carousel.scrollTimeout = setTimeout(() => {
+            
+            // 중앙 위치 계산
+            const centerPoint = carousel.scrollLeft + carousel.offsetWidth / 2;
+
+            let closestCardIndex = -1;
+            let minDistance = Infinity;
+
+            cards.forEach((card, index) => {
+                // 카드의 중앙 위치 계산
+                const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+                // 중앙 지점과의 거리
+                const distance = Math.abs(cardCenter - centerPoint);
+
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestCardIndex = index;
+                }
+            });
+
+            // --- 인디케이터 업데이트 로직 ---
+            // closestCardIndex는 총 8개 카드 중 하나를 가리킴 (0~7)
+            // 인디케이터는 6개의 콘텐츠 카드만 가리킴 (0~5)
+            // 콘텐츠 카드는 인덱스 1부터 6까지에 해당
+            
+            // 콘텐츠 카드 인덱스: closestCardIndex - 1
+            const activeDotIndex = closestCardIndex - 1;
+
+            dots.forEach((dot, index) => {
+                dot.classList.remove('active');
+            });
+            
+            // 인덱스 범위 (0~5) 안에 있을 때만 인디케이터 활성화
+            if (activeDotIndex >= 0 && activeDotIndex < contentCardCount) {
+                dots[activeDotIndex].classList.add('active');
+            }
+
+
+        }, 150); // 150ms 후 스크롤 멈춤 확인
+    });
+});
+    </script>
+</body>
+</html>
