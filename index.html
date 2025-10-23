@@ -17,16 +17,14 @@
       padding: 2rem;
     }
     .container {
-      background: white;
       border-radius: 20px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
       padding: 2rem;
       max-width: 420px;
       width: 100%;
       text-align: center;
     }
     input, textarea {
-      width: 100%;
+      width: 90%;
       margin-top: 10px;
       padding: 12px;
       font-size: 15px;
@@ -67,13 +65,13 @@
 </head>
 <body>
   <div class="container">
-    <h2>✨ API & 주희 말투 학습 ✨</h2>
-    <p>처음 한 번만 입력하면 됩니다.</p>
+    <h2>API & 주희 말투 학습 </h2>
+    <p>처음 한 번만 입력</p>
 
-    <input type="password" id="gptKey" placeholder="🔑 GPT API Key 입력" />
-    <input type="password" id="ttsKey" placeholder="🎙 ElevenLabs API Key 입력" />
+    <input type="password" id="gptKey" placeholder="GPT API Key 입력" />
+    <input type="password" id="ttsKey" placeholder="ElevenLabs API Key 입력" />
     <input type="file" id="csvFile" accept=".csv" />
-    <textarea id="sampleInput" placeholder="주희한테 테스트할 문장 입력하기 (예: 오늘 뭐하지?)"></textarea>
+    <textarea id="sampleInput" placeholder="주희한테 테스트할 문장 입력"></textarea>
     
     <button id="trainBtn">말투 학습하기</button>
     <button id="testBtn">말투 테스트</button>
@@ -120,11 +118,11 @@
       const userInput = document.getElementById("sampleInput").value.trim();
 
       if (!stylePrompt) {
-        alert("먼저 '말투 학습하기'를 진행해주세요!");
+        alert("먼저 '말투 학습하기'를 진행해주세요");
         return;
       }
       if (!gptKey) {
-        alert("GPT API 키를 입력해주세요!");
+        alert("GPT API 키를 입력해주세요");
         return;
       }
 
@@ -147,8 +145,8 @@
         });
 
         const data = await res.json();
-        const output = data.choices?.[0]?.message?.content?.trim() || "응답 없음 😢";
-        document.getElementById("response").innerText = "💬 주희 말투 응답:\n\n" + output;
+        const output = data.choices?.[0]?.message?.content?.trim() || "응답 없음";
+        document.getElementById("response").innerText = "주희 말투 응답:\n\n" + output;
       } catch (err) {
         document.getElementById("response").innerText = "에러 발생 😢\n" + err;
       }
@@ -160,7 +158,7 @@
       const ttsKey = document.getElementById("ttsKey").value.trim();
 
       if (!gptKey || !ttsKey || !stylePrompt) {
-        alert("모든 항목(GPT 키, TTS 키, 말투 학습)을 완료해주세요!");
+        alert("모든 항목(GPT 키, TTS 키, 말투 학습)을 완료해주세요");
         return;
       }
 
