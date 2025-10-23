@@ -687,11 +687,23 @@
         document.body.appendChild(btn);
     
         btn.addEventListener("click", async () => {
-          audioUnlocked = true;
-          btn.remove();
-          startFeedbackLoop(); // 🔁 음성 루프 시작
-        });
-      }
+            audioUnlocked = true;
+            btn.remove();
+
+            // ✅ 1️⃣ 모바일 브라우저용: dummy 오디오 1회 재생
+            try {
+                const silent = new Audio();
+                silent.src = "data:audio/mp3;base64,//uQxAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCA...";
+                silent.volume = 0; // 완전 무음
+                await silent.play().catch(() => {}); // Safari unlock용
+                console.log("🔊 Audio context unlocked");
+            } catch (err) {
+                console.warn("Audio unlock failed:", err);
+            }
+
+            // ✅ 2️⃣ 피드백 루프 시작
+            startFeedbackLoop();
+            });
     
       // ✅ 4. 10초마다 문장 생성 + 음성 재생
       async function startFeedbackLoop() {
