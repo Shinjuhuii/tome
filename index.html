@@ -108,7 +108,7 @@
             .map(row => row['Message'])
             .filter(msg => msg && msg.trim().length >= 2);
 
-          const random = myMessages.sort(() => 0.5 - Math.random()).slice(0, 300);
+          const random = myMessages.sort(() => 0.5 - Math.random()).slice(0, 800);
           stylePrompt = "다음은 사용자 '주희'의 말투 예시야. 이 말투를 따라 답변해줘:\n\n" + random.join('\n');
 
           localStorage.setItem("STYLE_PROMPT", stylePrompt);
